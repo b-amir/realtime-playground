@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useWebSocketConnection } from "./useWebSocketConnection";
 import { useSocketIOConnection } from "./useSocketIOConnection";
-import { useSSEConnection } from "./useSSEConnection"; 
+import { useSSEConnection } from "./useSSEConnection";
 function getBrowserSessionId() {
   let sessionId = localStorage.getItem("browserSessionId");
   if (!sessionId) {
@@ -106,17 +106,14 @@ export function useConnectionManager(
     },
     [addLog, onClientIdSet]
   );
-  const addTransactionLog = useCallback((method) => {
-    console.log(`Transaction logged for: ${method}`);
-  }, []);
+
   useWebSocketConnection(
     connectionStatus.websocket,
     browserSessionId.current,
     addLog,
     updateChartData,
     onTradingLog,
-    handleServerInfo,
-    addTransactionLog
+    handleServerInfo
   );
   useSocketIOConnection(
     connectionStatus.socketio,
@@ -124,17 +121,15 @@ export function useConnectionManager(
     addLog,
     updateChartData,
     onTradingLog,
-    handleServerInfo,
-    addTransactionLog
+    handleServerInfo
   );
   useSSEConnection(
     connectionStatus.sse,
-    browserSessionId.current, 
+    browserSessionId.current,
     addLog,
     updateChartData,
     onTradingLog,
-    handleServerInfo,
-    addTransactionLog
+    handleServerInfo
   );
   const handleOnline = useCallback(() => {
     addLog("Network connection restored", "success", "global");
@@ -159,5 +154,5 @@ export function useConnectionManager(
       effectRan.current = true;
     };
   }, [handleOnline, handleOffline]);
-  return {}; 
+  return {};
 }

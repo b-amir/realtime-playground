@@ -1,1 +1,137 @@
-import { useEffect, useRef, useCallback } from "react";import { io } from "socket.io-client";import { CONNECTION_CONFIG } from "@/config/connection";export function useSocketIOConnection(  isEnabled,  browserSessionId,  addLog,  updateChartData,  onTradingLog,  handleServerInfo,  addTransactionLog) {  const socketRef = useRef(null);  const effectRan = useRef(false);   const closeSocketIO = useCallback(    (logMessage = "Socket.IO connection closed (toggled off)") => {      if (socketRef.current) {        socketRef.current.off("connect");        socketRef.current.off("disconnect");        socketRef.current.off("connect_error");        socketRef.current.disconnect();        addLog(logMessage, "info", "socketio");        socketRef.current = null;      }    },    [addLog]  );  const setupSocketIO = useCallback(() => {    if (socketRef.current) return;    addLog("Connecting to Socket.IO server...", "info", "socketio");    const connectionQuery = { browserSessionId: browserSessionId };     addLog(      `Attempting Socket.IO connection with session ID: ${browserSessionId}...`,      "info",      "socketio"    );    try {      const newSocket = io(CONNECTION_CONFIG.SOCKETIO_URL, {        transports: ["websocket", "polling"],        path: "/socket.io",        reconnection: true,        reconnectionAttempts: 5,        reconnectionDelay: 1000,        reconnectionDelayMax: 5000,        timeout: 20000,        query: connectionQuery,      });      socketRef.current = newSocket;      newSocket.on("connect", () => {        if (socketRef.current === newSocket) {          addLog("Socket.IO connection established", "success", "socketio");        }      });      newSocket.on("server_info", (info) => {        if (socketRef.current === newSocket) {          handleServerInfo(info, "socketio");        }      });      newSocket.on("connect_error", (err) => {        if (socketRef.current === newSocket) {          addLog(            `Socket.IO connection error: ${err.message}`,            "error",            "socketio"          );        }      });      newSocket.on("disconnect", (reason) => {        if (socketRef.current === newSocket) {          addLog(            `Disconnected from Socket.IO: ${reason}`,            "warning",            "socketio"          );          if (reason !== "io client disconnect") {            socketRef.current = null;          }        }      });      newSocket.on("trading_log", (log) => {        if (socketRef.current === newSocket && onTradingLog) {          onTradingLog(log, "socketio");        }      });      newSocket.on("stockUpdate", (data) => {        if (socketRef.current === newSocket) {          try {            if (data.stock === "socketio") {              updateChartData(data);              addTransactionLog("socketio");            }          } catch (error) {            addLog(              `Error processing Socket.IO message: ${error.message}`,              "error",              "socketio"            );          }        }      });    } catch (error) {      addLog(        `Failed to create Socket.IO connection: ${error.message}`,        "error",        "socketio"      );    }  }, [    browserSessionId,    addLog,    updateChartData,    onTradingLog,    handleServerInfo,    addTransactionLog,  ]);  useEffect(() => {    if (effectRan.current === true || process.env.NODE_ENV !== "development") {      if (isEnabled) {        setupSocketIO();      } else {        closeSocketIO();      }    }    return () => {      if (        effectRan.current === false &&        process.env.NODE_ENV === "development"      ) {        closeSocketIO("Socket.IO closed (Strict Mode cleanup)");      }      effectRan.current = true;    };  }, [isEnabled, setupSocketIO, closeSocketIO]);  useEffect(() => {    return () => {      closeSocketIO("Socket.IO closed (Component unmounted)");    };  }, [closeSocketIO]);  return {};}
+import { useEffect, useRef, useCallback } from "react";
+import { io } from "socket.io-client";
+import { CONNECTION_CONFIG } from "@/config/connection";
+export function useSocketIOConnection(
+  isEnabled,
+  browserSessionId,
+  addLog,
+  updateChartData,
+  onTradingLog,
+  handleServerInfo
+) {
+  const socketRef = useRef(null);
+  const effectRan = useRef(false);
+  const closeSocketIO = useCallback(
+    (logMessage = "Socket.IO connection closed (toggled off)") => {
+      if (socketRef.current) {
+        socketRef.current.off("connect");
+        socketRef.current.off("disconnect");
+        socketRef.current.off("connect_error");
+        socketRef.current.disconnect();
+        addLog(logMessage, "info", "socketio");
+        socketRef.current = null;
+      }
+    },
+    [addLog]
+  );
+  const setupSocketIO = useCallback(() => {
+    if (socketRef.current) return;
+    addLog("Connecting to Socket.IO server...", "info", "socketio");
+    const connectionQuery = { browserSessionId: browserSessionId };
+    addLog(
+      `Attempting Socket.IO connection with session ID: ${browserSessionId}...`,
+      "info",
+      "socketio"
+    );
+    try {
+      const newSocket = io(CONNECTION_CONFIG.SOCKETIO_URL, {
+        transports: ["websocket", "polling"],
+        path: "/socket.io",
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000,
+        query: connectionQuery,
+      });
+      socketRef.current = newSocket;
+      newSocket.on("connect", () => {
+        if (socketRef.current === newSocket) {
+          addLog("Socket.IO connection established", "success", "socketio");
+        }
+      });
+      newSocket.on("server_info", (info) => {
+        if (socketRef.current === newSocket) {
+          handleServerInfo(info, "socketio");
+        }
+      });
+      newSocket.on("connect_error", (err) => {
+        if (socketRef.current === newSocket) {
+          addLog(
+            `Socket.IO connection error: ${err.message}`,
+            "error",
+            "socketio"
+          );
+        }
+      });
+      newSocket.on("disconnect", (reason) => {
+        if (socketRef.current === newSocket) {
+          addLog(
+            `Disconnected from Socket.IO: ${reason}`,
+            "warning",
+            "socketio"
+          );
+          if (reason !== "io client disconnect") {
+            socketRef.current = null;
+          }
+        }
+      });
+      newSocket.on("trading_log", (log) => {
+        if (socketRef.current === newSocket && onTradingLog) {
+          onTradingLog(log, "socketio");
+        }
+      });
+      newSocket.on("stockUpdate", (data) => {
+        if (socketRef.current === newSocket) {
+          try {
+            if (data.stock === "socketio") {
+              updateChartData(data);
+            }
+          } catch (error) {
+            addLog(
+              `Error processing Socket.IO message: ${error.message}`,
+              "error",
+              "socketio"
+            );
+          }
+        }
+      });
+    } catch (error) {
+      addLog(
+        `Failed to create Socket.IO connection: ${error.message}`,
+        "error",
+        "socketio"
+      );
+    }
+  }, [
+    browserSessionId,
+    addLog,
+    updateChartData,
+    onTradingLog,
+    handleServerInfo,
+  ]);
+  useEffect(() => {
+    if (effectRan.current === true || process.env.NODE_ENV !== "development") {
+      if (isEnabled) {
+        setupSocketIO();
+      } else {
+        closeSocketIO();
+      }
+    }
+    return () => {
+      if (
+        effectRan.current === false &&
+        process.env.NODE_ENV === "development"
+      ) {
+        closeSocketIO("Socket.IO closed (Strict Mode cleanup)");
+      }
+      effectRan.current = true;
+    };
+  }, [isEnabled, setupSocketIO, closeSocketIO]);
+  useEffect(() => {
+    return () => {
+      closeSocketIO("Socket.IO closed (Component unmounted)");
+    };
+  }, [closeSocketIO]);
+  return {};
+}
