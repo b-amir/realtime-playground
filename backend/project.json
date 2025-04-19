@@ -18,9 +18,9 @@
       }
     },
     "lint": {
-      "executor": "nx:run-script",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "script": "lint"
+        "lintFilePatterns": ["backend/**/*.js"]
       }
     }
   },

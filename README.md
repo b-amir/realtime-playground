@@ -10,10 +10,12 @@ This project demonstrates real-time financial data visualization using three dif
 
 ## 🏗️ Project Structure
 
-This is a monorepo containing two main packages:
+This is an [Nx](https://nx.dev) monorepo using npm workspaces. It contains two main packages:
 
-- **`backend/`**: Node.js/Express server handling data simulation and real-time communication via WS, Socket.IO, and SSE.
-- **`frontend/`**: React/Vite client application for visualizing the data and managing connections.
+- **`backend/`**: Node.js/Express server handling data simulation and real-time communication.
+- **`frontend/`**: React/Vite client application for visualizing data and managing connections.
+
+Nx manages task running (like starting, building, linting) across the packages.
 
 ## ✨ Features
 
@@ -43,6 +45,7 @@ This is a monorepo containing two main packages:
 
 **Development:**
 
+- Nx, npm Workspaces
 - ESLint, Prettier, Nodemon, Vitest
 
 ## 🚀 Getting Started
@@ -67,35 +70,39 @@ This is a monorepo containing two main packages:
     cp frontend/.env.example frontend/.env
     ```
 
-    - Adjust URLs/ports in `.env` files if necessary (defaults should work).
+    - Adjust URLs/ports if needed (defaults should work, backend uses 3001, frontend uses 5173).
 
-3.  **Install & Start**:
+3.  **Install Dependencies** (from root):
 
     ```bash
-    npm run install:all && npm start
+    npm install
     ```
 
-    This installs dependencies for both packages and starts backend & frontend concurrently.
+    _(This uses npm workspaces to install for both packages)_
 
-4.  **Access**: Open your browser to `http://localhost:5173` (or the port Vite specifies).
+4.  **Start Both Servers** (from root):
+
+    ```bash
+    npm start
+    ```
+
+    _(This uses `nx run-many --target=dev`)_
+
+5.  **Access**: Open your browser to `http://localhost:5173` (or the port Vite specifies).
 
 ## ⚙️ Configuration
 
 - Environment variables control ports, origins, and update intervals. See the `.env.example` files in `backend/` and `frontend/` for details.
 
-## ▶️ Available Scripts
+## ▶️ Available Scripts (Run from Root)
 
-- **Root**:
-  - `npm run install:all`: Installs all dependencies.
-  - `npm start`: Starts backend and frontend concurrently.
-- **Backend (`cd backend`)**:
-  - `npm run dev`: Start in dev mode (nodemon).
-  - `npm start`: Start in production mode.
-  - `npm run lint`: Lint code.
-- **Frontend (`cd frontend`)**:
-  - `npm run dev`: Start Vite dev server.
-  - `npm run build`: Build for production.
-  - `npm run preview`: Preview production build.
-  - `npm run lint`: Lint code.
-  - `npm run format`: Format code.
-  - `npm test`: Run tests.
+Nx handles running tasks defined in `project.json` for each package.
+
+- `npm start`: Starts both backend (`dev`) and frontend (`dev`) concurrently.
+- `npm run server`: Starts only the backend (`dev`).
+- `npm run client`: Starts only the frontend (`dev`).
+- `npm run build`: Builds both backend and frontend (if build targets exist).
+- `npm run lint`: Lints both backend and frontend.
+- `npm run test`: Runs tests for both backend and frontend (if test targets exist).
+
+_Individual package scripts (like `format` in frontend) can still be run by navigating to the package directory (`cd frontend`) and running `npm run <script_name>`._

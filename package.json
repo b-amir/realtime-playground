@@ -8,12 +8,18 @@
     "client": "nx run frontend:dev",
     "build": "nx run-many --target=build",
     "lint": "nx run-many --target=lint",
-    "test": "nx run-many --target=test",
-    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+    "test": "nx run-many --target=test"
   },
   "devDependencies": {
+    "@nx/eslint": "^20.8.0",
+    "@nx/node": "^20.8.0",
+    "@nx/vite": "^20.8.0",
     "concurrently": "^8.2.2",
     "nx": "20.8.0"
   },
-  "nx": {}
+  "nx": {},
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
 }

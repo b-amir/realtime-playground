@@ -12,15 +12,16 @@
       }
     },
     "build": {
-      "executor": "nx:run-script",
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
       "options": {
-        "script": "build"
+        "outputPath": "dist/frontend"
       }
     },
     "preview": {
-      "executor": "nx:run-script",
+      "executor": "@nx/vite:preview-server",
       "options": {
-        "script": "preview"
+        "buildTarget": "frontend:build"
       }
     },
     "test": {
@@ -30,9 +31,9 @@
       }
     },
     "lint": {
-      "executor": "nx:run-script",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "script": "lint"
+        "lintFilePatterns": ["frontend/**/*.{js,jsx}"]
       }
     }
   },
