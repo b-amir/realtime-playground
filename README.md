@@ -1,4 +1,4 @@
-# Financial Dashboard
+# Realtime playground
 
 ![Financial Dashboard Screenshot](https://raw.githubusercontent.com/b-amir/realtime-playground/main/frontend/public/Screenshot-1.png)
 
