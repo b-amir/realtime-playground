@@ -1,0 +1,212 @@
+:root {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --border: #334155;
+  --primary: #3b82f6;
+  --primary-foreground: #f8fafc;
+  --muted: #475569;
+  --muted-foreground: #94a3b8;
+  --color-websocket: #3b82f6;
+  --color-socketio: #8b5cf6;
+  --color-sse: #ec4899;
+  --radius: 12px;
+  --shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  color-scheme: dark;
+}
+
+.flex-col {
+  min-height: 0;
+}
+
+@keyframes pulseFade {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recharts-cartesian-grid line {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.recharts-x-axis,
+.recharts-y-axis {
+  font-size: 12px;
+}
+
+.recharts-tooltip-cursor {
+  stroke: var(--primary);
+}
+
+.recharts-legend-item-text {
+  color: var(--muted-foreground) !important;
+}
+
+.recharts-area {
+  opacity: 0.8;
+}
+
+.recharts-layer {
+  outline: none;
+}
+
+.recharts-surface {
+  overflow: visible;
+}
+
+.recharts-tooltip-wrapper {
+  z-index: 1000;
+}
+
+.chart-tooltip-wrapper {
+  border-radius: 4px;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius);
+  padding: 10px !important;
+}
+
+.recharts-tooltip-wrapper .recharts-tooltip-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px;
+}
+
+.recharts-tooltip-wrapper .recharts-tooltip-item-name,
+.recharts-tooltip-wrapper .recharts-tooltip-item-value {
+  color: var(--foreground) !important;
+}
+
+.recharts-tooltip-wrapper .recharts-tooltip-label {
+  color: var(--muted-foreground) !important;
+  margin-bottom: 8px !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  letter-spacing: -0.025em !important;
+  text-align: left !important;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+h1 {
+  margin-bottom: 3rem;
+  color: var(--foreground);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.recharts-cartesian-grid line {
+  stroke: var(--border);
+  opacity: 0.2;
+}
+
+.recharts-x-axis,
+.recharts-y-axis {
+  color: var(--muted-foreground);
+}
+
+.recharts-tooltip-cursor {
+  fill: rgba(255, 255, 255, 0.1);
+}
+
+.recharts-legend-item-text {
+  color: var(--muted-foreground);
+}
+
+.recharts-area {
+  will-change: transform;
+  transition: transform 0.3s ease-out;
+}
+
+.recharts-layer {
+  will-change: transform;
+}
+
+.recharts-surface {
+  will-change: transform;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .stock-card {
+    padding: 1.5rem;
+  }
+
+  .price {
+    font-size: 2rem;
+  }
+}

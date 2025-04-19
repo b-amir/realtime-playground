@@ -1,0 +1,147 @@
+import React, { useRef, useEffect, useState } from "react";
+import {
+  Info,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  Logs,
+  CirclePlay,
+  Trash2,
+  Binary,
+  Activity,
+  Layers,
+  Users,
+  MessageSquare,
+  MessageSquareShare,
+  MessageSquareDot,
+  Cable,
+} from "lucide-react";
+import { CONNECTION_METHODS } from "/src/constants/connectionMethods.jsx";
+const LogIcon = ({ type, id }) => {
+  if (id && id.startsWith("tx_")) {
+    return <CirclePlay className="h-4 w-4 text-green-500 flex-shrink-0" />;
+  }
+  if (type === "binary") {
+    return <Binary className="h-4 w-4 text-purple-500 flex-shrink-0" />;
+  }
+  if (type === "ping" || type === "pong") {
+    return <Activity className="h-4 w-4 text-blue-500 flex-shrink-0" />;
+  }
+  if (type === "namespace") {
+    return <Layers className="h-4 w-4 text-indigo-500 flex-shrink-0" />;
+  }
+  if (type === "room") {
+    return <Users className="h-4 w-4 text-pink-500 flex-shrink-0" />;
+  }
+  if (type === "trading_log_sent") {
+    return (
+      <MessageSquareShare className="h-4 w-4 text-cyan-500 flex-shrink-0" />
+    );
+  }
+  if (type === "trading_log_received") {
+    return <MessageSquareDot className="h-4 w-4 text-cyan-500 flex-shrink-0" />;
+  }
+  switch (type) {
+    case "success":
+      return <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />;
+    case "warning":
+      return <AlertCircle className="h-4 w-4 text-yellow-500 flex-shrink-0" />;
+    case "error":
+      return <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />;
+    case "info":
+    default:
+      return <Info className="h-4 w-4 text-blue-500 flex-shrink-0" />;
+  }
+};
+const getLogBackgroundClass = (type) => {
+  switch (type) {
+    case "binary":
+      return "bg-purple-900 bg-opacity-20";
+    case "namespace":
+      return "bg-indigo-900 bg-opacity-20";
+    case "room":
+      return "bg-pink-900 bg-opacity-20";
+    case "trading_log_sent":
+      return "bg-cyan-900 bg-opacity-10";
+    case "trading_log_received":
+      return "bg-cyan-900 bg-opacity-20";
+    default:
+      return "";
+  }
+};
+function ConnectionLogs({ logs, onClearLogs }) {
+  const logsEndRef = useRef(null);
+  const logsContentRef = useRef(null);
+  const [autoScroll, setAutoScroll] = useState(true);
+  useEffect(() => {
+    if (autoScroll && logsContentRef.current && logsEndRef.current) {
+      logsContentRef.current.scrollTop = logsContentRef.current.scrollHeight;
+    }
+  }, [logs, autoScroll]);
+  return (
+    <div className="relative flex flex-col h-full overflow-hidden">
+      <div className="flex flex-row justify-between items-center px-4 pt-4 pb-2 flex-shrink-0">
+        <div className="flex flex-row gap-2 items-center">
+          <Cable className="h-5 w-5" />
+          <h2 className="text-xl font-semibold">Connection Logs</h2>
+        </div>
+      </div>
+      <div className="flex items-center justify-start gap-4 px-4 py-2 bg-slate-900/70 backdrop-blur-md border-y border-border sticky top-0 z-10 -mb-8">
+        <label className="flex items-center gap-2 text-xs cursor-pointer">
+          <input
+            type="checkbox"
+            checked={autoScroll}
+            onChange={(e) => setAutoScroll(e.target.checked)}
+            className="w-4 h-4"
+          />
+          Auto-scroll
+        </label>
+        <button
+          onClick={onClearLogs}
+          className="flex items-center gap-2 text-xs hover:text-red-500 transition-colors"
+        >
+          <Trash2 className="h-4 w-4" />
+          Clear Logs
+        </button>
+      </div>
+      <div
+        ref={logsContentRef}
+        className="flex-1 min-h-0 overflow-y-auto px-5 pb-4 mb-2 scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-slate-700 scrollbar-thumb-rounded pt-10"
+      >
+        {logs.map((log) => {
+          const methodColor =
+            CONNECTION_METHODS.find((m) => m.value === log.method)?.color ||
+            "var(--muted)";
+          return (
+            <div
+              key={log.id}
+              className={`py-2 px-3 my-1 border-l-[3px] rounded-r text-sm flex flex-col gap-1 ${getLogBackgroundClass(log.type)}`}
+              style={{ borderLeftColor: methodColor }}
+            >
+              <div className="text-xs mb-0.5 opacity-50 text-start">
+                {log.timestamp}
+              </div>
+              <div className="flex items-center justify-start gap-2">
+                <LogIcon type={log.type} id={log.id} />
+                <span className="text-left break-words whitespace-normal overflow-hidden">
+                  {log.message.split(" : ").map((part, index) => {
+                    if (index === 0) {
+                      return (
+                        <span key={index} className="font-base">
+                          {part}
+                        </span>
+                      );
+                    }
+                    return part;
+                  })}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={logsEndRef} />
+      </div>
+    </div>
+  );
+}
+export default React.memo(ConnectionLogs);

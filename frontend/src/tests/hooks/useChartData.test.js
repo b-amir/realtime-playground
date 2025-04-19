@@ -1,0 +1,15 @@
+import { renderHook, act } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { useChartData } from "../../hooks/useChartData";
+
+const mockAddLog = vi.fn();
+const mockIncrementTransactionCount = vi.fn();
+
+describe("useChartData", () => {
+  it("initializes with default data structure", () => {
+    const { result } = renderHook(() =>
+      useChartData(mockAddLog, mockIncrementTransactionCount)
+    );
+    expect(result.current.chartData).toEqual([]);
+  });
+});
