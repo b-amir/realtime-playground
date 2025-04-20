@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { CONNECTION_METHODS } from "/src/constants/connectionMethods";
 const MAX_TRADING_LOGS = 50;
 export function useMessaging(
@@ -10,15 +10,22 @@ export function useMessaging(
 ) {
   const [messages, setMessages] = useState([]);
   const [processedMessageIds] = useState(new Set());
+  const latestStatusRef = useRef(tradingLogsConnectionStatus);
+  useEffect(() => {
+    latestStatusRef.current = tradingLogsConnectionStatus;
+  }, [tradingLogsConnectionStatus]);
   const handleReceiveMessage = useCallback(
     (message, method) => {
-      console.log(
-        `[handleReceiveMessage] Received log via: ${method}, Watching status: ${tradingLogsConnectionStatus?.[method]}, Message ID: ${message?.id}`
-      );
-      console.log(
-        `[handleReceiveMessage] Condition met for ${method}. Processing message ID: ${message?.id}`
-      );
-      if (message.sender !== clientId && !processedMessageIds.has(message.id)) {
+      const currentStatus = latestStatusRef.current;
+      const isMethodWatched = currentStatus && currentStatus[method];
+      if (!isMethodWatched) {
+        return;
+      }
+      if (!message || !message.id) {
+        console.warn("[handleReceiveMessage] Received invalid message object:", message);
+        return;
+      }
+      if (!processedMessageIds.has(message.id)) {
         processedMessageIds.add(message.id);
         if (processedMessageIds.size > MAX_TRADING_LOGS * 3) {
           const idsArray = Array.from(processedMessageIds);
@@ -26,7 +33,8 @@ export function useMessaging(
           idsToRemove.forEach((id) => processedMessageIds.delete(id));
         }
         setMessages((prev) => {
-          const newMessages = [...prev, { ...message, isSelf: false }];
+          const isSelf = message.sender === clientId;
+          const newMessages = [...prev, { ...message, isSelf }];
           return newMessages.slice(-MAX_TRADING_LOGS);
         });
       }
@@ -40,7 +48,7 @@ export function useMessaging(
     return null;
   }, []);
   const handleSendMessage = useCallback(
-    (text, tradingLogsConnectionStatus) => {
+    (text, currentTradingLogsConnectionStatus) => {
       if (!clientId) {
         addLog(
           "Cannot send message: Not connected to server",
@@ -49,7 +57,7 @@ export function useMessaging(
         );
         return;
       }
-      const activeMethod = getActiveMethod(tradingLogsConnectionStatus);
+      const activeMethod = getActiveMethod(currentTradingLogsConnectionStatus);
       if (!activeMethod) {
         addLog(
           "Cannot send message: No method in watchlist",
@@ -69,10 +77,13 @@ export function useMessaging(
         tradeAction: null,
         price: currentPrice,
       };
-      setMessages((prev) => {
-        const newMessages = [...prev, newMessage];
-        return newMessages.slice(-MAX_TRADING_LOGS);
-      });
+      if (!processedMessageIds.has(newMessage.id)) {
+        processedMessageIds.add(newMessage.id);
+        setMessages((prev) => {
+          const newMessages = [...prev, newMessage];
+          return newMessages.slice(-MAX_TRADING_LOGS);
+        });
+      }
       if (activeMethod === "socketio") {
         window.socket?.emit("trading_log", newMessage);
         incrementTransactionCount("socketio");
@@ -98,6 +109,7 @@ export function useMessaging(
       getActiveMethod,
       getCurrentPrice,
       incrementTransactionCount,
+      processedMessageIds
     ]
   );
   const handleTrade = useCallback(
@@ -122,10 +134,13 @@ export function useMessaging(
         tradeAction: formattedTradeType,
         price: currentPrice,
       };
-      setMessages((prev) => {
-        const newMessages = [...prev, newMessage];
-        return newMessages.slice(-MAX_TRADING_LOGS);
-      });
+      if (!processedMessageIds.has(newMessage.id)) {
+        processedMessageIds.add(newMessage.id);
+        setMessages((prev) => {
+          const newMessages = [...prev, newMessage];
+          return newMessages.slice(-MAX_TRADING_LOGS);
+        });
+      }
       if (methodValue === "socketio" && window.socket) {
         window.socket.emit("trading_action", newMessage);
         incrementTransactionCount("socketio");
@@ -136,7 +151,7 @@ export function useMessaging(
         incrementTransactionCount("websocket");
       }
     },
-    [clientId, addLog, getCurrentPrice, incrementTransactionCount]
+    [clientId, addLog, getCurrentPrice, incrementTransactionCount, processedMessageIds]
   );
   const clearMessages = useCallback(() => {
     setMessages([]);

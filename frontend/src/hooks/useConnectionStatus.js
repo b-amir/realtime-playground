@@ -30,6 +30,25 @@ export function useConnectionStatus() {
   });
   const [tradingLogsConnectionStatus, setTradingLogsConnectionStatus] =
     useState(() => {
+      try {
+        const storedStatus = localStorage.getItem(GRAPH_WATCHLIST_STORAGE_KEY);
+        if (storedStatus) {
+          const parsedStatus = JSON.parse(storedStatus);
+          if (typeof parsedStatus === "object" && parsedStatus !== null) {
+            const initialStatus = {};
+            CONNECTION_METHODS.forEach((method) => {
+              initialStatus[method.value] =
+                parsedStatus[method.value] ?? method.defaultInWatchlist;
+            });
+            return initialStatus;
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Error reading graph watchlist status for trading logs from localStorage:",
+          error
+        );
+      }
       const initialStatus = {};
       CONNECTION_METHODS.forEach((method) => {
         initialStatus[method.value] = method.defaultInWatchlist;
@@ -70,7 +89,7 @@ export function useConnectionStatus() {
       }
       return newStatus;
     });
-  }, []);
+  }, [setGraphConnectionStatus]);
   const incrementTransactionCount = useCallback((method) => {
     setTransactionCounts((prev) => ({
       ...prev,

@@ -1,6 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
 import { CircleSlash2, MessageSquare, Trash2 } from "lucide-react";
 import { CONNECTION_METHODS } from "@/constants/connectionMethods";
+function formatTimestamp(timestamp) {
+  if (typeof timestamp === 'number' && !isNaN(timestamp)) {
+    return new Date(timestamp).toLocaleTimeString();
+  }
+  if (typeof timestamp === 'string') {
+    return timestamp;
+  }
+  return 'Invalid time';
+}
 function LogHeader({ autoScroll, setAutoScroll, onClearMessages }) {
   return (
     <>
@@ -52,6 +61,7 @@ function MessageItem({ msg }) {
   )?.label;
   return (
     <div
+      key={msg.id}
       className={`flex p-3 px-4 flex-row items-start w-full rounded-xl relative ${
         msg.tradeAction ? "animate-[pulseFade_2s_ease-in-out]" : ""
       }`}
@@ -65,7 +75,9 @@ function MessageItem({ msg }) {
           <div className="flex items-center gap-2">
             <div className="font-bold text-sm">{msg.sender}</div>
           </div>
-          <span className="text-xs text-muted-foreground">{msg.timestamp}</span>
+          <span className="text-xs text-muted-foreground">
+            {formatTimestamp(msg.timestamp)}
+          </span>
         </div>
         <div>
           {msg.tradeAction ? (

@@ -34,7 +34,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         const methodLabel = methodInfo?.label || entry.dataKey;
         return (
           <div
-            key={entry.dataKey}
+            key={`item-${index}`}
             className="py-1 font-medium"
             style={{ color: entry.color }}
           >

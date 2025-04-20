@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { glob } from "glob";
+import glob from 'glob';
+import { promisify } from "util";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,17 +39,26 @@ function processFile(filePath) {
   }
 }
 
-async function processDirectory() {
+function processDirectory() {
   try {
-    const files = await glob(`${SRC_DIR}/**/*{${EXTENSIONS.join(",")}}`);
+    const pattern = `${SRC_DIR}/**/*{${EXTENSIONS.join(",")}}`;
+    console.log(`Using glob pattern: ${pattern}`);
+    
+    const files = glob.sync(pattern);
+    
+    console.log(`Glob result type: ${typeof files}`);
+    console.log(`Glob result:`, files);
+
+    if (!Array.isArray(files)) {
+      console.error("Glob.sync did not return an array! Cannot process files.");
+      return;
+    }
 
     console.log(`Found ${files.length} files to process`);
-
     files.forEach(processFile);
-
     console.log("All done! Comments have been removed.");
   } catch (err) {
-    console.error("Error finding files:", err);
+    console.error("Error during glob sync processing:", err);
   }
 }
 

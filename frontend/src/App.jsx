@@ -77,6 +77,7 @@ function App() {
               onToggle={handleGraphToggle}
               onTrade={onTrade}
               transactionCounts={transactionCounts}
+              onTradingLogsToggle={handleTradingLogsToggle}
             />
           </div>
           <div className="flex-grow rounded-lg shadow-lg border border-border overflow-hidden bg-slate-900 bg-opacity-20 min-h-0">
