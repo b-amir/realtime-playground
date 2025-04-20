@@ -27,7 +27,7 @@ Nx manages task running (like starting, building, linting) across the packages.
 - **🔌 Auto-reconnection**: Attempts to reconnect dropped connections.
 - **❤️ Health Check**: Backend `/health` endpoint.
 
-## 📊 UI Workflow & Comparison
+## 📊 UI and Workflow
 
 The UI provides several components to help visualize and compare the real-time protocols:
 
@@ -37,8 +37,9 @@ The UI provides several components to help visualize and compare the real-time p
   <img src="https://raw.githubusercontent.com/b-amir/realtime-playground/main/frontend/public/Screenshot-2.png" alt="Protocol Control Cards" width="800">
 </p>
 
-- **What it shows**: Individual cards for each protocol (WebSocket, Socket.IO, SSE) displaying the current simulated price, number of watchers, and connection status.
-- **Comparison**: Allows you to individually connect/disconnect ("watch"/"unwatch") each protocol stream. Observe differences in connection stability, price update frequency (if configured differently), and how quickly watcher counts update. Notice the "Buy"/"Sell" buttons simulate user interaction, possible with bi-directional protocols like WebSocket and Socket.IO, but typically not directly initiated via SSE.
+👉 Individual cards for each protocol (WebSocket, Socket.IO, SSE) displaying the current simulated price, number of watchers, and connection status.
+
+- Allows you to individually connect/disconnect ("watch"/"unwatch") each protocol stream. Observe differences in connection stability, price update frequency (if configured differently), and how quickly watcher counts update. Notice the "Buy"/"Sell" buttons simulate user interaction, possible with bi-directional protocols like WebSocket and Socket.IO, but typically not directly initiated via SSE.
 
 ### 2. Trading Room Log
 
@@ -46,8 +47,9 @@ The UI provides several components to help visualize and compare the real-time p
   <img src="https://raw.githubusercontent.com/b-amir/realtime-playground/main/frontend/public/Screenshot-3.png" alt="Trading Room Log" width="600">
 </p>
 
-- **What it shows**: A log of simulated buy/sell actions performed by different users on the different "stocks" (protocols).
-- **Comparison**: Demonstrates the bi-directional capability. Actions sent from the client (like a buy/sell request) are processed by the server and broadcast back to connected clients via WebSocket and Socket.IO. SSE, being unidirectional (server-to-client), wouldn't typically show client-initiated actions like this reflected back in the same stream.
+👉 A log of simulated buy/sell actions performed by different users on the different "stocks" (protocols).
+
+- Demonstrates the bi-directional capability. Actions sent from the client (like a buy/sell request) are processed by the server and broadcast back to connected clients via WebSocket and Socket.IO. SSE, being unidirectional (server-to-client), wouldn't typically show client-initiated actions like this reflected back in the same stream.
 
 ### 3. Connection Logs
 
@@ -55,8 +57,9 @@ The UI provides several components to help visualize and compare the real-time p
   <img src="https://raw.githubusercontent.com/b-amir/realtime-playground/main/frontend/public/Screenshot-4.png" alt="Connection Logs" width="600">
 </p>
 
-- **What it shows**: Detailed logs of connection lifecycle events: establishing connections, client joins/leaves, IP addresses, and connection status messages for each protocol.
-- **Comparison**: Provides insight into the underlying mechanics. You can see specific connection events for WebSocket and Socket.IO. Socket.IO might show more initial setup messages due to its handshake and potential fallback mechanisms. SSE connection events might appear simpler. This log helps debug connection issues and understand the verbosity of each protocol's connection management.
+👉 Detailed logs of connection lifecycle events: establishing connections, client joins/leaves, IP addresses, and connection status messages for each protocol.
+
+- Provides insight into the underlying mechanics. You can see specific connection events for WebSocket and Socket.IO. Socket.IO might show more initial setup messages due to its handshake and potential fallback mechanisms. SSE connection events might appear simpler. This log helps debug connection issues and understand the verbosity of each protocol's connection management.
 
 ### 4. Data History Chart
 
@@ -64,8 +67,9 @@ The UI provides several components to help visualize and compare the real-time p
   <img src="https://raw.githubusercontent.com/b-amir/realtime-playground/main/frontend/public/Screenshot-5.png" alt="Data History Chart" width="600">
 </p>
 
-- **What it shows**: A line chart visualizing the price history for the currently "watched" protocols.
-- **Comparison**: Allows for a visual comparison of the data streams received. If the backend simulates slight variations or delays for different protocols, you might observe differences in the chart lines, illustrating potential latency or data delivery nuances between WebSocket, Socket.IO, and SSE.
+👉 A line chart visualizing the price history for the currently "watched" protocols.
+
+- Allows for a visual comparison of the data streams received. If the backend simulates slight variations or delays for different protocols, you might observe differences in the chart lines, illustrating potential latency or data delivery nuances between WebSocket, Socket.IO, and SSE.
 
 ## 🛠️ Tech Stack
 
