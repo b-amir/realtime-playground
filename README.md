@@ -34,7 +34,7 @@ The UI provides several components to help visualize and compare the real-time p
 ### 1. Protocol Control Cards
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/b-amir/realtime-playground/main/frontend/public/Screenshot-2.png" alt="Protocol Control Cards" width="600">
+  <img src="https://raw.githubusercontent.com/b-amir/realtime-playground/main/frontend/public/Screenshot-2.png" alt="Protocol Control Cards" width="800">
 </p>
 
 - **What it shows**: Individual cards for each protocol (WebSocket, Socket.IO, SSE) displaying the current simulated price, number of watchers, and connection status.
